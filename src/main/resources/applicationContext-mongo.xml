@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+    <context:component-scan base-package="com.wcc.mogon"/>
+
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <mongo:mongo-client id="mongo-client" replica-set="${mongo.replicaSet}">
+        <mongo:client-options
+                connections-per-host="${mongo.connectionsPerHost}"
+                connect-timeout="${mongo.connectTimeout}"
+                threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+                max-wait-time="${mongo.maxWaitTime}"
+                socket-keep-alive="${mongo.socketKeepAlive}"
+                socket-timeout="${mongo.socketTimeout}"
+                read-preference="${mongo.readPreference}"
+                write-concern="${mongo.writeConcern}"/>
+    </mongo:mongo-client>
+
+    <!--设置使用的数据库名-->
+    <mongo:db-factory id="mongo-factory" dbname="test" mongo-ref="mongo-client"/>
+
+    <!--mongo的模板-->
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongoDbFactory" ref="mongo-factory" />
+        <!--<constructor-arg name="mongoConverter" ref="mappingMongoConverter" />-->
+    </bean>
+</beans>
